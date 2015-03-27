@@ -177,9 +177,9 @@ func main() {
 	flag.StringVar(&duration, "d", duration,
 		"Duration limit with unit suffix, e.g. 250ms, 1h45m. Valid time "+
 			"units are ns, us, ms, s, m, h")
-	flag.StringVar(&seperator.pattern, "p", "~",
+	flag.StringVar(&seperator.pattern, "p", "-",
 		"Defines a custom seperator pattern")
-	flag.IntVar(&seperator.reps, "r", 120,
+	flag.IntVar(&seperator.reps, "r", 80,
 		"Defines how often the seperator pattern will be repeated")
 	flag.Parse()
 	d, err := time.ParseDuration(duration)
