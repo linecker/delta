@@ -9,7 +9,7 @@ $ cat example.log
 12:00:02 ... and another one.
 12:01:00 Some time later.
 ```
-This is a simplistic text file that contains five lines of text accompanied by timestamps (like it's the case with a typical log file). The first four lines have timestamps close to each other while the last line is a bit off. It takes quite a while for a human beeing to scan through those timestamps and spot this circumstance.
+This simplistic text file contains five lines of text, each accompanied by a timestamp (like it's the case with a typical log file). The first four lines have timestamps close to each other while the last line is a bit off. It takes quite a while for a human beeing to scan through those timestamps and spot this circumstance.
 ```
 $ cat example.log | delta -d 10s
 12:00:00 A first line ...
