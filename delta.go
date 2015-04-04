@@ -159,7 +159,18 @@ func analyzeStdin() {
 
 // Print usage message.
 func usage() {
-	fmt.Println("Usage: delta [flags]")
+	fmt.Println(`Usage: delta <[FILE] >[FILE]
+
+	tail -f /var/log/messages | delta
+
+delta - highlight timestamp gaps.
+
+It reads from stdin, tries to find timestamps and calculates the timestamp
+delta between subsequent lines. If this delta is larger then a certain limit,
+an extra line of ASCII decoration that visually seperates those two lines is 
+inserted.
+	
+Options:`)
 	flag.PrintDefaults()
 	os.Exit(2)
 }
