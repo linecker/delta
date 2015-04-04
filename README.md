@@ -1,5 +1,6 @@
 # Delta
-Highlight lines with large timestamp delta.
+
+Highlight timestamp gaps.
 
 ```
 $ cat example.log
@@ -23,19 +24,28 @@ When using delta, a seperation line (simple ASCII, nothing else) gets drawn betw
 
 ## Usage
 ```
-Usage: delta [flags]
-  -c="": Use a custom timestamp format instead of the predefined ones. The format has 
-         to be specified as a regular expression, e.g. "([0-9]{2}:[0-9]{2}:[0-9]{2})". 
-         If used, a layout example has to provided as well using the -e switch. The 
-         layout example has to show how the reference time, defined to be 
-         15:04:05.000000000 would be displayed
-  -d="100ms": Duration limit with unit suffix, e.g. 250ms, 1h45m. Valid time units 
-         are ns, us, ms, s, m, h
-  -e="": Example for the custom timestamp format, see -c
-  -f="": Provides a file to read from
-  -p="~": Defines a custom seperator pattern
-  -r=120: Defines how often the seperator pattern should be repeated to form the 
-         seperator line
+./delta -h
+Usage: delta <[FILE] >[FILE]
+
+	tail -f /var/log/messages | delta
+
+delta - highlight timestamp gaps.
+
+It reads from stdin, tries to find timestamps and calculates the timestamp
+delta between subsequent lines. If this delta is larger then a certain limit,
+an extra line of ASCII decoration that visually seperates those two lines is 
+inserted.
+	
+Options:
+  -c="": Use a custom timestamp format instead of the predefined ones. If used, 
+  an example has to provided with the -e switch
+  -d="100ms": Duration limit with unit suffix, e.g. 250ms, 1h45m. Valid time 
+  units are ns, us, ms, s, m, h
+  -e="": Example for the custom timestamp format
+  -f="": Read from this file
+  -p="-": Defines a custom seperator pattern
+  -r=80: Defines how often the seperator pattern will be repeated
+
 ```
 Examples:
 ```
