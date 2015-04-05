@@ -1,4 +1,4 @@
-// delta.go - Highlight lines with large timestamp delta.
+// delta.go - Highlight timestamp gaps.
 //
 // delta reads lines of text from log files or stdin, tries to find timestamps 
 // in those lines of text and calculates the difference of the timestamps
@@ -20,6 +20,9 @@ import "time"
 // Two subsequent lines with timestamp differences larger then
 // timestampDifferenceLimit will get seperated.
 var timestampDifferenceLimit time.Duration
+
+// TODO doc
+var comparisionFunction func(t time.Time) bool = largeTimestampDifference
 
 // Name of the input file ("" if stdin is used).
 var inputFileName string
@@ -100,6 +103,34 @@ func largeTimestampDifference(t time.Time) bool {
 	return false
 }
 
+var first int64 = 0
+var mean int64
+
+// todo: doesn't work very good yet!
+func dynamicDifference(t time.Time) bool {
+	if first == 0 {
+		previousTimestamp = t
+		first = 1
+		return false
+	} else if first == 1 {
+		diff := -previousTimestamp.Sub(t)
+		mean = int64(diff)
+		first = 2
+		return false
+	} else if first == 2 {
+		diff := -previousTimestamp.Sub(t)
+		previousTimestamp = t
+		eta := 0.1
+		mean += int64(float64((int64(diff) - mean)) * eta)
+		fmt.Printf("diff = %12d, mean = %12d |", diff/1000000, mean/1000000)
+		if int64(diff) > mean {
+			return false // true
+		}
+		return false
+	}
+	return false
+}
+
 // Analyze a single line.
 func analyzeLine(line []byte) {
 	// Check if any of the known timestamp formats fits.
@@ -114,8 +145,7 @@ func analyzeLine(line []byte) {
 			if err != nil {
 				continue
 			}
-			//fmt.Println("timestamp", parsed)
-			if largeTimestampDifference(parsed) {
+			if comparisionFunction(parsed) {
 				fmt.Println(seperator.line)
 			}
 			break
@@ -177,6 +207,7 @@ Options:`)
 
 func main() {
 	// Care about command line flags.
+	dynamic := false
 	duration := "100ms"
 	flag.Usage = usage
 	flag.StringVar(&inputFileName, "f", "", "Read from this file")
@@ -192,7 +223,11 @@ func main() {
 		"Defines a custom seperator pattern")
 	flag.IntVar(&seperator.reps, "r", 80,
 		"Defines how often the seperator pattern will be repeated")
+	flag.BoolVar(&dynamic, "y", dynamic, "Use dynamic duration limit")
 	flag.Parse()
+	if dynamic {
+		comparisionFunction = dynamicDifference
+	}
 	d, err := time.ParseDuration(duration)
 	if err != nil {
 		fmt.Println(err)
